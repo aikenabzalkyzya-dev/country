@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>World Explorer</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f2f2f2;
+      color: #111;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    header {
+      background: white;
+      padding: 20px 0;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    header h2 {
+      font-size: 22px;
+    }
+
+    .controls {
+      margin: 30px 0;
+    }
+
+    .search {
+      background: white;
+      padding: 12px 20px;
+      width: 100%;
+      max-width: 400px;
+      border-radius: 5px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .search input {
+      width: 100%;
+      border: none;
+      outline: none;
+      font-size: 14px;
+    }
+
+    .countries {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 40px;
+      margin-bottom: 40px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 5px;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .card img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+    }
+
+    .card .info {
+      padding: 20px;
+    }
+
+    .card h3 {
+      margin-bottom: 10px;
+    }
+
+    .card p {
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div class="container">
+      <h2>Where in the world?</h2>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <div class="controls">
+      <div class="search">
+        <input type="text" id="search" placeholder="Search for a country..." />
+      </div>
+    </div>
+
+    <div id="countries" class="countries"></div>
+
+  </main>
+
+  <script>
+    const countriesBox = document.getElementById("countries");
+    const search = document.getElementById("search");
+
+    let data = [];
+
+    fetch("data.json")
+      .then(res => res.json())
+      .then(json => {
+        data = json;
+        render(data);
+      });
+
+    function render(list) {
+      countriesBox.innerHTML = "";
+      list.forEach(c => {
+        countriesBox.innerHTML += `
+        <div class="card">
+          <img src="${c.flags.svg}" alt="">
+          <div class="info">
+            <h3>${c.name}</h3>
+            <p><b>Population:</b> ${c.population.toLocaleString()}</p>
+            <p><b>Region:</b> ${c.region}</p>
+            <p><b>Capital:</b> ${c.capital || "N/A"}</p>
+          </div>
+        </div>
+      `;
+      });
+    }
+
+    search.oninput = () => {
+      const val = search.value.toLowerCase();
+      const filtered = data.filter(country =>
+        country.name.toLowerCase().includes(val)
+      );
+      render(filtered);
+    };
+  </script>
+
+</body>
+
+</html>
